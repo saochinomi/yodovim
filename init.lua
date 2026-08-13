@@ -1,6 +1,7 @@
 require("config.options")
 require("config.keymaps")
 require("config.autocmds")
+vim.cmd.colorscheme("yodovim")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
