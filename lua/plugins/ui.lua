@@ -2,10 +2,13 @@ return {
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
-    lazy = false,
+    keys = {
+      { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "File explorer" },
+    },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons",
     },
     config = function()
       require("neo-tree").setup({
@@ -22,13 +25,15 @@ return {
           indent = { with_expanders = true },
         },
       })
-      vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "File explorer" })
     end,
   },
   {
     "akinsho/bufferline.nvim",
     version = "*",
     event = "VeryLazy",
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
     config = function()
       require("bufferline").setup({
         options = {
@@ -44,21 +49,61 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
     config = function()
+      local mode_icons = {
+        n = { "", "NORMAL" },
+        i = { "", "INSERT" },
+        v = { "", "VISUAL" },
+        V = { "", "V-LINE" },
+        ["\22"] = { "", "V-BLOCK" },
+        c = { "", "COMMAND" },
+        R = { "", "REPLACE" },
+        t = { "", "TERMINAL" },
+        s = { "", "SELECT" },
+        S = { "", "S-LINE" },
+        ["\19"] = { "", "S-BLOCK" },
+        ["!"] = { "", "EX" },
+      }
+      local function mode()
+        local m = mode_icons[vim.fn.mode()]
+        if not m then
+          return vim.fn.mode():upper()
+        end
+        return m[1] .. " " .. m[2]
+      end
+      local function filetype_with_icon()
+        local ft = vim.bo.filetype
+        if ft == "" then
+          return ""
+        end
+        local ok, devicons = pcall(require, "nvim-web-devicons")
+        local icon = ""
+        if ok then
+          icon = devicons.get_icon(vim.fn.expand("%:t"), ft, { default = false }) or ""
+        end
+        return icon .. " " .. ft
+      end
+      local function clock()
+        return os.date("%H:%M:%S")
+      end
       require("lualine").setup({
         options = {
           theme = "auto",
           globalstatus = true,
           section_separators = { left = "", right = "" },
           component_separators = { left = "", right = "" },
+          refresh = { statusline = 1000 },
         },
         sections = {
-          lualine_a = { "mode" },
+          lualine_a = { mode },
           lualine_b = { "branch", "diff" },
           lualine_c = { { "filename", path = 1 } },
-          lualine_x = { "diagnostics", "filetype" },
+          lualine_x = { "diagnostics", filetype_with_icon },
           lualine_y = { "progress" },
-          lualine_z = { "location" },
+          lualine_z = { "location", clock },
         },
       })
     end,

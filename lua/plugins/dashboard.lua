@@ -24,10 +24,15 @@ return {
       local function recent_files()
         local files = {}
         local seen = {}
+        local ok, devicons = pcall(require, "nvim-web-devicons")
         for _, path in ipairs(vim.v.oldfiles) do
           local name = vim.fn.fnamemodify(path, ":t")
           if name ~= "" and vim.fn.filereadable(path) == 1 and not seen[name] then
-            table.insert(files, { path = path, name = name })
+            local icon = ""
+            if ok then
+              icon = devicons.get_icon(path, nil, { default = false }) or ""
+            end
+            table.insert(files, { path = path, name = icon .. " " .. name })
             seen[name] = true
           end
           if #files >= 8 then
@@ -49,15 +54,18 @@ return {
       dashboard.section.header.opts.position = "center"
 
       dashboard.section.buttons.val = {
-        dashboard.button("r", "Recent files", "<cmd>Telescope oldfiles<CR>"),
-        dashboard.button("f", "Find file", "<cmd>Telescope find_files<CR>"),
-        dashboard.button("n", "New file", "<cmd>ene<CR>"),
-        dashboard.button("s", "Recent sessions", function()
+        dashboard.button("r", "  Recent files", "<cmd>Telescope oldfiles<CR>"),
+        dashboard.button("f", "  Find file", "<cmd>Telescope find_files<CR>"),
+        dashboard.button("n", "  New file", "<cmd>ene<CR>"),
+        dashboard.button("t", "  Themes", function()
+          require("config.theme").pick()
+        end),
+        dashboard.button("s", "  Recent sessions", function()
           require("config.sessions").pick()
         end),
-        dashboard.button("g", "Git status", open_lazygit),
-        dashboard.button("c", "Edit config", "<cmd>e " .. vim.fn.stdpath("config") .. "/init.lua<CR>"),
-        dashboard.button("q", "Quit", "<cmd>qa<CR>"),
+        dashboard.button("g", "  Git status", open_lazygit),
+        dashboard.button("c", "  Edit config", "<cmd>e " .. vim.fn.stdpath("config") .. "/init.lua<CR>"),
+        dashboard.button("q", "  Quit", "<cmd>qa<CR>"),
       }
       dashboard.section.buttons.opts.hl = "AlphaButtons"
       dashboard.section.buttons.opts.spacing = 1
@@ -103,9 +111,10 @@ return {
       dashboard.section.footer.val = function()
         local version = vim.version()
         local plugins = vim.tbl_count(require("lazy").plugins())
+        local elapsed = (vim.uv.hrtime() - vim.g.yodovim_start) / 1e6
         return {
-          "Neovim v" .. version.major .. "." .. version.minor .. "." .. version.patch,
-          plugins .. " plugins",
+          "Neovim v" .. version.major .. "." .. version.minor .. "." .. version.patch .. " · " .. plugins .. " plugins",
+          "Запуск: " .. string.format("%.0f", elapsed) .. " ms",
         }
       end
       dashboard.section.footer.opts.hl = "AlphaFooter"
@@ -125,6 +134,34 @@ return {
       alpha.setup(dashboard.opts)
 
       vim.keymap.set("n", "<leader>da", "<cmd>Alpha<CR>", { desc = "Dashboard" })
+
+      vim.api.nvim_create_autocmd({ "BufDelete", "BufWipeout" }, {
+        callback = function(args)
+          local remaining = 0
+          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if
+              vim.api.nvim_buf_is_valid(buf)
+              and buf ~= args.buf
+              and vim.bo[buf].buflisted
+              and vim.api.nvim_buf_get_name(buf) ~= ""
+            then
+              remaining = remaining + 1
+            end
+          end
+          if remaining == 0 then
+            vim.schedule(function()
+              if vim.bo.filetype == "alpha" then
+                return
+              end
+              local empty = vim.api.nvim_get_current_buf()
+              require("alpha").start(false)
+              if vim.api.nvim_buf_is_valid(empty) and vim.api.nvim_get_current_buf() ~= empty then
+                pcall(vim.api.nvim_buf_delete, empty, { force = true })
+              end
+            end)
+          end
+        end,
+      })
 
       local function show_dashboard_or_session()
         if vim.fn.argc() ~= 0 then

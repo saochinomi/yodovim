@@ -1,7 +1,8 @@
 vim.g.colors_name = "yodovim"
 
-local bg = "#000000"
-local fg = "#ffffff"
+local bg = "#161616"
+local fg = "#e0e0e0"
+local dim = "#8a8a8a"
 
 local function set(group, opts)
   vim.api.nvim_set_hl(0, group, opts)
@@ -17,15 +18,15 @@ local groups = {
   Cursor = { fg = bg, bg = fg },
   CursorLine = { underline = true },
   CursorLineNr = { fg = fg, bold = true },
-  LineNr = { fg = fg },
-  SignColumn = { fg = fg, bg = bg },
-  FoldColumn = { fg = fg, bg = bg },
+  LineNr = { fg = dim },
+  SignColumn = { fg = dim, bg = bg },
+  FoldColumn = { fg = dim, bg = bg },
   Folded = { italic = true },
-  Conceal = { fg = fg },
-  VertSplit = { fg = fg, bg = bg },
-  WinSeparator = { fg = fg, bg = bg },
+  Conceal = { fg = dim },
+  VertSplit = { fg = dim, bg = bg },
+  WinSeparator = { fg = dim, bg = bg },
   WinBar = { fg = fg, bg = bg },
-  WinBarNC = { fg = fg, bg = bg },
+  WinBarNC = { fg = dim, bg = bg },
 
   Visual = { fg = bg, bg = fg },
   VisualNOS = { fg = bg, bg = fg },
@@ -35,10 +36,10 @@ local groups = {
   MatchParen = { fg = bg, bg = fg, bold = true },
 
   StatusLine = { fg = bg, bg = fg },
-  StatusLineNC = { fg = fg, bg = bg },
-  TabLine = { fg = fg, bg = bg },
+  StatusLineNC = { fg = dim, bg = bg },
+  TabLine = { fg = dim, bg = bg },
   TabLineSel = { fg = bg, bg = fg, bold = true },
-  TabLineFill = { fg = fg, bg = bg },
+  TabLineFill = { fg = dim, bg = bg },
   Title = { bold = true },
   Directory = { bold = true },
 
@@ -63,7 +64,7 @@ local groups = {
   WarningMsg = { bold = true, underline = true },
   ErrorMsg = { bold = true, underline = true },
 
-  Comment = { italic = true },
+Comment = { fg = dim, italic = true },
   Keyword = { bold = true },
   Statement = { bold = true },
   Conditional = { bold = true },
@@ -99,9 +100,9 @@ local groups = {
   Error = { bold = true, underline = true },
   Todo = { fg = bg, bg = fg, bold = true },
 
-  SpecialKey = { fg = fg },
-  NonText = { fg = fg },
-  Whitespace = { fg = fg },
+  SpecialKey = { fg = dim },
+  NonText = { fg = dim },
+  Whitespace = { fg = dim },
   SpellBad = { underline = true },
   SpellCap = { underline = true },
   SpellLocal = { underline = true },
@@ -155,7 +156,7 @@ local groups = {
   GitSignsDeleteNr = { strikethrough = true },
 
   NeoTreeNormal = { fg = fg, bg = bg },
-  NeoTreeNormalNC = { fg = fg, bg = bg },
+  NeoTreeNormalNC = { fg = dim, bg = bg },
   NeoTreeCursorLine = { underline = true },
   NeoTreeDirectoryName = { bold = true },
   NeoTreeFileName = {},
@@ -166,14 +167,14 @@ local groups = {
   NeoTreeGitModified = { italic = true },
   NeoTreeGitDeleted = { strikethrough = true },
   NeoTreeGitUntracked = {},
-  NeoTreeIndentMarker = {},
+  NeoTreeIndentMarker = { fg = dim },
   NeoTreeExpander = { bold = true },
   NeoTreeFloatBorder = { fg = fg },
   NeoTreeFloatTitle = { bold = true },
 
-  BufferLineFill = { fg = fg, bg = bg },
-  BufferLineBuffer = { fg = fg, bg = bg },
-  BufferLineBufferVisible = { fg = fg, bg = bg },
+  BufferLineFill = { fg = dim, bg = bg },
+  BufferLineBuffer = { fg = dim, bg = bg },
+  BufferLineBufferVisible = { fg = dim, bg = bg },
   BufferLineBufferSelected = { fg = bg, bg = fg, bold = true },
   BufferLineModified = { italic = true },
   BufferLineModifiedVisible = { italic = true },
@@ -182,16 +183,16 @@ local groups = {
   BufferLineCloseButtonVisible = {},
   BufferLineCloseButtonSelected = { fg = bg, bg = fg },
   BufferLineIndicatorSelected = { fg = fg },
-  BufferLineSeparator = { fg = fg, bg = bg },
-  BufferLineSeparatorVisible = { fg = fg, bg = bg },
-  BufferLineSeparatorSelected = { fg = fg, bg = bg },
-  BufferLineTab = { fg = fg, bg = bg },
+  BufferLineSeparator = { fg = dim, bg = bg },
+  BufferLineSeparatorVisible = { fg = dim, bg = bg },
+  BufferLineSeparatorSelected = { fg = dim, bg = bg },
+  BufferLineTab = { fg = dim, bg = bg },
   BufferLineTabSelected = { fg = bg, bg = fg, bold = true },
   BufferLineTabClose = {},
-  BufferLineTabSeparator = {},
-  BufferLineTabSeparatorSelected = {},
-  BufferLineDuplicate = {},
-  BufferLineDuplicateVisible = {},
+  BufferLineTabSeparator = { fg = dim },
+  BufferLineTabSeparatorSelected = { fg = dim },
+  BufferLineDuplicate = { fg = dim },
+  BufferLineDuplicateVisible = { fg = dim },
   BufferLineDuplicateSelected = { fg = bg, bg = fg },
   BufferLineDiagnostic = {},
   BufferLineDiagnosticVisible = {},
@@ -230,14 +231,14 @@ local groups = {
   IlluminatedWordRead = { underline = true },
   IlluminatedWordWrite = { underline = true },
 
-  IblIndent = { fg = fg },
-  IblScope = { fg = fg },
+  IblIndent = { fg = dim },
+  IblScope = { fg = dim },
 
   AlphaHeader = { fg = fg, bold = true },
   AlphaHeaderLabel = { fg = fg, bold = true },
   AlphaButtons = { fg = fg },
   AlphaShortcut = { fg = bg, bg = fg, bold = true },
-  AlphaFooter = { italic = true },
+  AlphaFooter = { fg = dim, italic = true },
 
   BlinkCmpKind = {},
   BlinkCmpDoc = { bg = bg },
