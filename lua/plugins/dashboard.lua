@@ -196,18 +196,14 @@ return {
         if vim.fn.argc() ~= 0 then
           return
         end
-        local ok, last = pcall(require("persistence").last)
-        if ok and last and vim.fn.filereadable(last) == 1 then
-          require("persistence").load({ last = true })
-        else
-          local empty = vim.api.nvim_get_current_buf()
-          require("alpha").start(false)
-          mark_alpha()
-          if vim.api.nvim_buf_is_valid(empty) and vim.api.nvim_get_current_buf() ~= empty then
-            vim.schedule(function()
-              pcall(vim.api.nvim_buf_delete, empty, { force = true })
-            end)
-          end
+        vim.cmd("cd " .. vim.env.HOME)
+        local empty = vim.api.nvim_get_current_buf()
+        require("alpha").start(false)
+        mark_alpha()
+        if vim.api.nvim_buf_is_valid(empty) and vim.api.nvim_get_current_buf() ~= empty then
+          vim.schedule(function()
+            pcall(vim.api.nvim_buf_delete, empty, { force = true })
+          end)
         end
       end
       show_dashboard_or_session()
