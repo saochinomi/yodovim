@@ -113,29 +113,82 @@ return {
           return string.format("%2d%%%%", math.floor(cur / total * 100))
         end
       end
+local function theme_color(hl)
+        local c = vim.api.nvim_get_hl(0, { name = hl }).fg
+        if type(c) == "number" then
+          return string.format("#%06x", c)
+        end
+        return c or "#ffffff"
+      end
+      local mode_colors = {
+        n = "DiagnosticError",
+        i = "HealthSuccess",
+        v = "DiagnosticInfo",
+        V = "DiagnosticInfo",
+        ["\22"] = "DiagnosticInfo",
+        c = "WarningMsg",
+        R = "DiagnosticWarn",
+        t = "DiagnosticInfo",
+        s = "DiagnosticInfo",
+        S = "DiagnosticInfo",
+        ["\19"] = "DiagnosticInfo",
+        ["!"] = "DiagnosticError",
+      }
+      local function mode_color()
+        return { fg = theme_color(mode_colors[vim.fn.mode()] or "DiagnosticInfo") }
+      end
+      local function bar()
+        return "▊"
+      end
+      local function lsp_name()
+        local buf_ft = vim.bo.filetype
+        if buf_ft == "" then
+          return ""
+        end
+        for _, client in ipairs(vim.lsp.get_clients()) do
+          local fts = client.config.filetypes
+          if fts and vim.fn.index(fts, buf_ft) ~= -1 then
+            return " " .. client.name
+          end
+        end
+        return ""
+      end
       require("lualine").setup({
         options = {
           theme = "auto",
           globalstatus = true,
-          section_separators = { left = "", right = "" },
-          component_separators = { left = "", right = "" },
+          section_separators = { left = "", right = "" },
+          component_separators = { left = "", right = "" },
           refresh = { statusline = 1000 },
         },
         sections = {
-          lualine_a = { mode },
-          lualine_b = { "branch", "diff" },
-          lualine_c = { { "filename", path = 1 } },
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = {
+            { bar, color = function() return { fg = theme_color("Title") } end },
+            { mode, color = mode_color },
+            filetype_with_icon,
+            { "filename", path = 1 },
+            "location",
+            progress,
+            {
+              "diagnostics",
+              symbols = { error = "  ", warn = "  ", info = "  ", hint = "  " },
+            },
+            { function() return "%=" end },
+            { lsp_name, color = { gui = "bold" } },
+          },
           lualine_x = {
-        {
-          "diagnostics",
-          symbols = { error = " ", warn = " ", info = " ", hint = " " },
-        },
-        filetype_with_icon,
-      },
-          lualine_y = { progress },
-          lualine_z = { "location", clock },
+            "branch",
+            "diff",
+            { clock, color = function() return { fg = theme_color("Comment") } end },
+            { bar, color = function() return { fg = theme_color("Title") } end },
+          },
+          lualine_y = {},
+          lualine_z = {},
         },
       })
+
     end,
   },
   {

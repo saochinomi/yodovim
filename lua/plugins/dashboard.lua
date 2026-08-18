@@ -50,28 +50,43 @@ return {
         "   ██║   ╚██████╔╝██████╔╝╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║",
         "   ╚═╝    ╚═════╝ ╚═════╝  ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
       }
-      local logo_colors = { "#f7768e", "#ff9e64", "#e0af68", "#9ece6a", "#7aa2f7", "#bb9af7" }
-      for i, color in ipairs(logo_colors) do
-        vim.api.nvim_set_hl(0, "YodoLogo" .. i, { fg = color })
-      end
+      vim.api.nvim_set_hl(0, "YodoLogo", { fg = "#ffffff" })
       dashboard.section.header.val = logo_lines
-      local header_hl = {}
-      for i = 1, #logo_lines do
-        header_hl[i] = { { "YodoLogo" .. i, 0, -1 } }
-      end
-      dashboard.section.header.opts.hl = header_hl
+      dashboard.section.header.opts.hl = "YodoLogo"
       dashboard.section.header.opts.position = "center"
 
+      local function yodo_button(key, icon, desc, action)
+        return {
+          type = "button",
+          val = icon .. "  " .. desc,
+          on_press = function()
+            if type(action) == "string" then
+              vim.cmd(action)
+            else
+              action()
+            end
+          end,
+          opts = {
+            position = "center",
+            width = 44,
+            keymap = { "n", key, action, { noremap = true, silent = true, nowait = true } },
+            shortcut = key,
+            align_shortcut = "right",
+            hl_shortcut = "Number",
+            hl = "AlphaButtons",
+          },
+        }
+      end
+
       dashboard.section.buttons.val = {
-        dashboard.button("r", " Recent", "<cmd>Telescope oldfiles<CR>"),
-        dashboard.button("f", " Find", "<cmd>Telescope find_files<CR>"),
-        dashboard.button("t", " Themes", function()
+        yodo_button("r", "", "Recent", "<cmd>Telescope oldfiles<CR>"),
+        yodo_button("f", "", "Find files", "<cmd>Telescope find_files<CR>"),
+        yodo_button("t", "", "Themes", function()
           require("config.theme").pick()
         end),
-        dashboard.button("g", " Git", open_lazygit),
-        dashboard.button("c", " Config", "<cmd>e " .. vim.fn.stdpath("config") .. "/init.lua<CR>"),
+        yodo_button("g", "", "Git", open_lazygit),
+        yodo_button("c", "", "Config", "<cmd>e " .. vim.fn.stdpath("config") .. "/init.lua<CR>"),
       }
-      dashboard.section.buttons.opts.hl = "AlphaButtons"
       dashboard.section.buttons.opts.spacing = 0
       dashboard.section.buttons.opts.position = "center"
 
@@ -167,6 +182,7 @@ return {
           for _, buf in ipairs(vim.api.nvim_list_bufs()) do
             if
               vim.api.nvim_buf_is_valid(buf)
+              and buf ~= vim.api.nvim_get_current_buf()
               and (vim.bo[buf].filetype == "alpha" or vim.b[buf].yodo_alpha)
             then
               pcall(vim.api.nvim_buf_delete, buf, { force = true })
