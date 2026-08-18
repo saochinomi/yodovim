@@ -24,3 +24,19 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = event.buf })
   end,
 })
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = augroup,
+  callback = function()
+    local name = vim.fn.expand("%")
+    if name ~= "" and vim.fn.isdirectory(name) == 1 then
+      local dir = vim.fn.fnamemodify(name, ":p")
+      local old = vim.api.nvim_get_current_buf()
+      vim.cmd("enew")
+      vim.schedule(function()
+        require("neo-tree.command").execute({ action = "show", dir = dir })
+        pcall(vim.api.nvim_buf_delete, old, { force = true })
+      end)
+    end
+  end,
+})

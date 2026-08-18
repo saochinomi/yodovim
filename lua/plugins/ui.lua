@@ -54,18 +54,18 @@ return {
     },
     config = function()
       local mode_icons = {
-        n = { "", "NORMAL" },
-        i = { "", "INSERT" },
-        v = { "", "VISUAL" },
-        V = { "", "V-LINE" },
-        ["\22"] = { "", "V-BLOCK" },
-        c = { "", "COMMAND" },
-        R = { "", "REPLACE" },
-        t = { "", "TERMINAL" },
-        s = { "", "SELECT" },
-        S = { "", "S-LINE" },
-        ["\19"] = { "", "S-BLOCK" },
-        ["!"] = { "", "EX" },
+        n = { "", "NORMAL" },
+        i = { "", "INSERT" },
+        v = { "", "VISUAL" },
+        V = { "", "V-LINE" },
+        ["\22"] = { "", "V-BLOCK" },
+        c = { "", "COMMAND" },
+        R = { "", "REPLACE" },
+        t = { "", "TERMINAL" },
+        s = { "", "SELECT" },
+        S = { "", "S-LINE" },
+        ["\19"] = { "", "S-BLOCK" },
+        ["!"] = { "", "EX" },
       }
       local function mode()
         local m = mode_icons[vim.fn.mode()]
@@ -82,19 +82,30 @@ return {
         local ok, devicons = pcall(require, "nvim-web-devicons")
         local icon = ""
         if ok then
-          icon = devicons.get_icon(vim.fn.expand("%:t"), ft, { default = false }) or ""
+          icon = devicons.get_icon(vim.fn.expand("%:t"), nil, { default = true }) or ""
         end
-        return icon .. " " .. ft
+        return icon
       end
       local function clock()
-        return os.date("%H:%M:%S")
+        return " " .. os.date("%H:%M:%S")
+      end
+      local function progress()
+        local cur = vim.fn.line(".")
+        local total = vim.fn.line("$")
+        if cur == 1 then
+          return ""
+        elseif cur == total then
+          return ""
+        else
+          return string.format("%2d%%%%", math.floor(cur / total * 100))
+        end
       end
       require("lualine").setup({
         options = {
           theme = "auto",
           globalstatus = true,
-          section_separators = { left = "", right = "" },
-          component_separators = { left = "", right = "" },
+          section_separators = { left = "", right = "" },
+          component_separators = { left = "", right = "" },
           refresh = { statusline = 1000 },
         },
         sections = {
@@ -102,7 +113,7 @@ return {
           lualine_b = { "branch", "diff" },
           lualine_c = { { "filename", path = 1 } },
           lualine_x = { "diagnostics", filetype_with_icon },
-          lualine_y = { "progress" },
+          lualine_y = { progress },
           lualine_z = { "location", clock },
         },
       })

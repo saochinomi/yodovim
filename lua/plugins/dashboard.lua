@@ -54,18 +54,18 @@ return {
       dashboard.section.header.opts.position = "center"
 
       dashboard.section.buttons.val = {
-        dashboard.button("r", "  Recent files", "<cmd>Telescope oldfiles<CR>"),
-        dashboard.button("f", "  Find file", "<cmd>Telescope find_files<CR>"),
-        dashboard.button("n", "  New file", "<cmd>ene<CR>"),
-        dashboard.button("t", "  Themes", function()
+        dashboard.button("r", " Recent", "<cmd>Telescope oldfiles<CR>"),
+        dashboard.button("f", " Find", "<cmd>Telescope find_files<CR>"),
+        dashboard.button("n", " New", "<cmd>ene<CR>"),
+        dashboard.button("t", " Themes", function()
           require("config.theme").pick()
         end),
-        dashboard.button("s", "  Recent sessions", function()
+        dashboard.button("s", " Sessions", function()
           require("config.sessions").pick()
         end),
-        dashboard.button("g", "  Git status", open_lazygit),
-        dashboard.button("c", "  Edit config", "<cmd>e " .. vim.fn.stdpath("config") .. "/init.lua<CR>"),
-        dashboard.button("q", "  Quit", "<cmd>qa<CR>"),
+        dashboard.button("g", " Git", open_lazygit),
+        dashboard.button("c", " Config", "<cmd>e " .. vim.fn.stdpath("config") .. "/init.lua<CR>"),
+        dashboard.button("q", " Quit", "<cmd>qa<CR>"),
       }
       dashboard.section.buttons.opts.hl = "AlphaButtons"
       dashboard.section.buttons.opts.spacing = 0
@@ -76,7 +76,7 @@ return {
         val = {
           {
             type = "text",
-            val = "  Recent files",
+            val = " Recent",
             opts = { hl = "AlphaHeaderLabel", position = "center" },
           },
           {
