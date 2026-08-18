@@ -6,7 +6,12 @@
 
 ## 🔥 Превью
 
-(скриншот главного меню)
+<img width="1830" height="926" alt="2026-08-18_22-08-38" src="https://github.com/user-attachments/assets/b03d7e8c-c537-4992-995e-423bba280bdd" />
+<img width="1831" height="929" alt="2026-08-18_22-08-40" src="https://github.com/user-attachments/assets/3c4f4d87-63ea-407f-81f3-9b2c11dbb6ba" />
+<img width="1830" height="926" alt="2026-08-18_22-08-10" src="https://github.com/user-attachments/assets/a0495f55-65ad-4bc7-b2f0-082cd0afdba0" />
+<img width="1832" height="898" alt="2026-08-18_22-08-28" src="https://github.com/user-attachments/assets/273635e4-f7d1-49b6-9bbc-f02bed51cb0d" />
+<img width="1832" height="898" alt="2026-08-18_22-08-14" src="https://github.com/user-attachments/assets/e84d59c1-2484-49ba-92fd-6417da93fdf2" />
+
 
 ## ✨ Возможности
 
