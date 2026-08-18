@@ -42,7 +42,7 @@ return {
         return files
       end
 
-      dashboard.section.header.val = {
+      local logo_lines = {
         "██╗   ██╗ ██████╗ ██████╗  ██████╗ ██╗   ██╗██╗███╗   ███╗",
         "╚██╗ ██╔╝██╔═══██╗██╔══██╗██╔═══██╗██║   ██║██║████╗ ████║",
         " ╚████╔╝ ██║   ██║██║  ██║██║   ██║██║   ██║██║██╔████╔██║",
@@ -50,22 +50,26 @@ return {
         "   ██║   ╚██████╔╝██████╔╝╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║",
         "   ╚═╝    ╚═════╝ ╚═════╝  ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
       }
-      dashboard.section.header.opts.hl = "AlphaHeader"
+      local logo_colors = { "#f7768e", "#ff9e64", "#e0af68", "#9ece6a", "#7aa2f7", "#bb9af7" }
+      for i, color in ipairs(logo_colors) do
+        vim.api.nvim_set_hl(0, "YodoLogo" .. i, { fg = color })
+      end
+      dashboard.section.header.val = logo_lines
+      local header_hl = {}
+      for i = 1, #logo_lines do
+        header_hl[i] = { { "YodoLogo" .. i, 0, -1 } }
+      end
+      dashboard.section.header.opts.hl = header_hl
       dashboard.section.header.opts.position = "center"
 
       dashboard.section.buttons.val = {
         dashboard.button("r", " Recent", "<cmd>Telescope oldfiles<CR>"),
         dashboard.button("f", " Find", "<cmd>Telescope find_files<CR>"),
-        dashboard.button("n", " New", "<cmd>ene<CR>"),
         dashboard.button("t", " Themes", function()
           require("config.theme").pick()
         end),
-        dashboard.button("s", " Sessions", function()
-          require("config.sessions").pick()
-        end),
         dashboard.button("g", " Git", open_lazygit),
         dashboard.button("c", " Config", "<cmd>e " .. vim.fn.stdpath("config") .. "/init.lua<CR>"),
-        dashboard.button("q", " Quit", "<cmd>qa<CR>"),
       }
       dashboard.section.buttons.opts.hl = "AlphaButtons"
       dashboard.section.buttons.opts.spacing = 0
@@ -135,27 +139,40 @@ return {
 
       vim.keymap.set("n", "<leader>da", "<cmd>Alpha<CR>", { desc = "Dashboard" })
 
-      vim.api.nvim_create_autocmd({ "BufDelete", "BufWipeout" }, {
+      local function mark_alpha()
+        pcall(function()
+          local buf = vim.api.nvim_get_current_buf()
+          vim.b[buf].yodo_alpha = true
+          vim.keymap.set("n", "q", function()
+            local start = vim.api.nvim_get_current_buf()
+            local ok = pcall(vim.cmd, "bp")
+            local b = vim.api.nvim_get_current_buf()
+            if not ok or b == start or vim.fn.bufname(b) == "" or not vim.bo[b].buflisted then
+              pcall(vim.cmd, "bd")
+            end
+          end, { buffer = buf, silent = true })
+        end)
+      end
+
+      local function open_dashboard()
+        require("alpha").start(false)
+        mark_alpha()
+      end
+
+      vim.keymap.set("n", "<leader>da", open_dashboard, { desc = "Dashboard" })
+      vim.keymap.set("n", "<leader>m", open_dashboard, { desc = "Main menu" })
+
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
         callback = function()
-          vim.schedule(function()
-            local remaining = 0
-            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-              if
-                vim.api.nvim_buf_is_valid(buf)
-                and vim.bo[buf].buflisted
-                and vim.api.nvim_buf_get_name(buf) ~= ""
-              then
-                remaining = remaining + 1
-              end
+          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if
+              vim.api.nvim_buf_is_valid(buf)
+              and (vim.bo[buf].filetype == "alpha" or vim.b[buf].yodo_alpha)
+            then
+              pcall(vim.api.nvim_buf_delete, buf, { force = true })
+              break
             end
-            if remaining == 0 and vim.bo.filetype ~= "alpha" then
-              local empty = vim.api.nvim_get_current_buf()
-              require("alpha").start(false)
-              if vim.api.nvim_buf_is_valid(empty) and vim.api.nvim_get_current_buf() ~= empty then
-                pcall(vim.api.nvim_buf_delete, empty, { force = true })
-              end
-            end
-          end)
+          end
         end,
       })
 
@@ -167,7 +184,14 @@ return {
         if ok and last and vim.fn.filereadable(last) == 1 then
           require("persistence").load({ last = true })
         else
+          local empty = vim.api.nvim_get_current_buf()
           require("alpha").start(false)
+          mark_alpha()
+          if vim.api.nvim_buf_is_valid(empty) and vim.api.nvim_get_current_buf() ~= empty then
+            vim.schedule(function()
+              pcall(vim.api.nvim_buf_delete, empty, { force = true })
+            end)
+          end
         end
       end
       show_dashboard_or_session()

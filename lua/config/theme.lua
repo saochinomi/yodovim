@@ -3,15 +3,23 @@ local M = {}
 local themes = {
   { "yodovim", "Yodovim (черно-белая)" },
   { "tokyonight", "TokyoNight" },
-  { "catppuccin", "Catppuccin" },
   { "gruvbox", "Gruvbox" },
   { "nord", "Nord" },
   { "dracula", "Dracula" },
-  { "rose-pine", "Rose Pine" },
   { "everforest", "Everforest" },
   { "nightfox", "Nightfox" },
   { "kanagawa", "Kanagawa" },
   { "onedark", "One Dark" },
+  { "habamax", "Habamax" },
+  { "retrobox", "Retrobox" },
+  { "slate", "Slate" },
+  { "torte", "Torte" },
+  { "zellner", "Zellner" },
+  { "wildcharm", "Wildcharm" },
+  { "koehler", "Koehler" },
+  { "pablo", "Pablo" },
+  { "peachpuff", "Peachpuff" },
+  { "evening", "Evening" },
 }
 
 local function state_file()

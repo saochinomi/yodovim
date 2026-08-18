@@ -13,7 +13,7 @@ return {
     config = function()
       require("neo-tree").setup({
         filesystem = {
-          follow_current_file = { enabled = true },
+          bind_to_cwd = false,
           filtered_items = {
             visible = false,
             hide_dotfiles = false,
@@ -24,6 +24,19 @@ return {
         default_component_configs = {
           indent = { with_expanders = true },
         },
+      })
+      vim.api.nvim_create_autocmd("DirChanged", {
+        callback = function()
+          vim.schedule(function()
+            pcall(function()
+              local manager = require("neo-tree.sources.manager")
+              local state = manager.get_state("filesystem")
+              if state and state.winid and state.winid ~= -1 then
+                manager.navigate(state, vim.fn.getcwd())
+              end
+            end)
+          end)
+        end,
       })
     end,
   },
@@ -93,7 +106,7 @@ return {
         local cur = vim.fn.line(".")
         local total = vim.fn.line("$")
         if cur == 1 then
-          return ""
+          return ""
         elseif cur == total then
           return ""
         else
@@ -112,7 +125,13 @@ return {
           lualine_a = { mode },
           lualine_b = { "branch", "diff" },
           lualine_c = { { "filename", path = 1 } },
-          lualine_x = { "diagnostics", filetype_with_icon },
+          lualine_x = {
+        {
+          "diagnostics",
+          symbols = { error = " ", warn = " ", info = " ", hint = " " },
+        },
+        filetype_with_icon,
+      },
           lualine_y = { progress },
           lualine_z = { "location", clock },
         },
@@ -164,5 +183,37 @@ return {
       indent = { char = "│" },
       scope = { enabled = false },
     },
+  },
+  {
+    "NvChad/nvim-colorizer.lua",
+    event = "BufReadPre",
+    config = function()
+      require("colorizer").setup({
+        filetypes = {
+          "css",
+          "html",
+          "scss",
+          "javascript",
+          "typescript",
+          "javascriptreact",
+          "typescriptreact",
+          "lua",
+          "python",
+          "json",
+          "markdown",
+          "svelte",
+          "vue",
+        },
+        user_default_options = {
+          tailwind = true,
+          names = true,
+          rgb_fn = true,
+          hsl_fn = true,
+        },
+      })
+      vim.schedule(function()
+        pcall(require("colorizer").attach_to_buffer, vim.api.nvim_get_current_buf())
+      end)
+    end,
   },
 }
