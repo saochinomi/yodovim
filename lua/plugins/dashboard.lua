@@ -50,7 +50,7 @@ return {
         "   ██║   ╚██████╔╝██████╔╝╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║",
         "   ╚═╝    ╚═════╝ ╚═════╝  ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
       }
-      vim.api.nvim_set_hl(0, "YodoLogo", { fg = "#ffffff" })
+      vim.api.nvim_set_hl(0, "YodoLogo", { fg = "#ff9e64" })
       dashboard.section.header.val = logo_lines
       dashboard.section.header.opts.hl = "YodoLogo"
       dashboard.section.header.opts.position = "center"
