@@ -13,8 +13,8 @@ return {
     dependencies = { "williamboman/mason.nvim" },
     opts = {
       ensure_installed = {
-        "black",
         "ruff",
+        "mypy",
         "clang-format",
         "stylua",
         "typescript-language-server",
@@ -97,6 +97,8 @@ return {
       require("blink.cmp").setup({
         keymap = {
           preset = "default",
+          ["<Tab>"] = { "accept", "snippet_forward", "fallback" },
+          ["<S-Tab>"] = { "snippet_backward", "fallback" },
         },
         sources = {
           default = { "lsp", "path", "snippets", "buffer" },
@@ -110,12 +112,26 @@ return {
     end,
   },
   {
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      require("lint").linters_by_ft = {
+        python = { "mypy" },
+      }
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        callback = function()
+          require("lint").try_lint()
+        end,
+      })
+    end,
+  },
+  {
     "stevearc/conform.nvim",
     event = { "BufReadPre", "BufNewFile" },
     cmd = "ConformInfo",
     opts = {
       formatters_by_ft = {
-        python = { "black" },
+        python = { "ruff_fix", "ruff_format" },
         c = { "clang_format" },
         cpp = { "clang_format" },
         lua = { "stylua" },

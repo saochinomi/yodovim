@@ -68,7 +68,7 @@ return {
         dashboard.button("q", "  Quit", "<cmd>qa<CR>"),
       }
       dashboard.section.buttons.opts.hl = "AlphaButtons"
-      dashboard.section.buttons.opts.spacing = 1
+      dashboard.section.buttons.opts.spacing = 0
       dashboard.section.buttons.opts.position = "center"
 
       dashboard.section.mru = {
@@ -76,7 +76,7 @@ return {
         val = {
           {
             type = "text",
-            val = "Recent files",
+            val = "  Recent files",
             opts = { hl = "AlphaHeaderLabel", position = "center" },
           },
           {
@@ -105,7 +105,7 @@ return {
             end,
           },
         },
-        opts = { position = "center", spacing = 1 },
+        opts = { position = "center", spacing = 0 },
       }
 
       dashboard.section.footer.val = function()
@@ -121,13 +121,13 @@ return {
       dashboard.section.footer.opts.position = "center"
 
       dashboard.opts.layout = {
-        { type = "padding", val = 3 },
+        { type = "padding", val = 2 },
         dashboard.section.header,
-        { type = "padding", val = 3 },
+        { type = "padding", val = 2 },
         dashboard.section.buttons,
-        { type = "padding", val = 2 },
+        { type = "padding", val = 1 },
         dashboard.section.mru,
-        { type = "padding", val = 2 },
+        { type = "padding", val = 1 },
         dashboard.section.footer,
       }
 
@@ -136,30 +136,26 @@ return {
       vim.keymap.set("n", "<leader>da", "<cmd>Alpha<CR>", { desc = "Dashboard" })
 
       vim.api.nvim_create_autocmd({ "BufDelete", "BufWipeout" }, {
-        callback = function(args)
-          local remaining = 0
-          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-            if
-              vim.api.nvim_buf_is_valid(buf)
-              and buf ~= args.buf
-              and vim.bo[buf].buflisted
-              and vim.api.nvim_buf_get_name(buf) ~= ""
-            then
-              remaining = remaining + 1
-            end
-          end
-          if remaining == 0 then
-            vim.schedule(function()
-              if vim.bo.filetype == "alpha" then
-                return
+        callback = function()
+          vim.schedule(function()
+            local remaining = 0
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              if
+                vim.api.nvim_buf_is_valid(buf)
+                and vim.bo[buf].buflisted
+                and vim.api.nvim_buf_get_name(buf) ~= ""
+              then
+                remaining = remaining + 1
               end
+            end
+            if remaining == 0 and vim.bo.filetype ~= "alpha" then
               local empty = vim.api.nvim_get_current_buf()
               require("alpha").start(false)
               if vim.api.nvim_buf_is_valid(empty) and vim.api.nvim_get_current_buf() ~= empty then
                 pcall(vim.api.nvim_buf_delete, empty, { force = true })
               end
-            end)
-          end
+            end
+          end)
         end,
       })
 

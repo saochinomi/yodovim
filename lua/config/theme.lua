@@ -19,7 +19,7 @@ local function state_file()
 end
 
 function M.load()
-  local name = "yodovim"
+  local name = "tokyonight"
   local ok, lines = pcall(vim.fn.readfile, state_file())
   if ok and lines and #lines > 0 then
     for _, t in ipairs(themes) do
