@@ -7,7 +7,6 @@ return {
       { "<leader>s", "<cmd>Telescope live_grep<CR>", desc = "Live grep" },
       { "<leader>b", "<cmd>Telescope buffers<CR>", desc = "Buffers" },
       { "<leader>p", "<cmd>Telescope commands<CR>", desc = "Command palette" },
-      { "<leader>h", "<cmd>Telescope help_tags<CR>", desc = "Help" },
     },
     dependencies = {
       "nvim-lua/plenary.nvim",

@@ -178,6 +178,10 @@ return {
 			end
 
 			local function open_dashboard()
+				local buf = vim.api.nvim_get_current_buf()
+				if vim.bo[buf].filetype == "alpha" or vim.b[buf].yodo_alpha then
+					return
+				end
 				require("alpha").start(false)
 				mark_alpha()
 			end
@@ -219,7 +223,7 @@ return {
 	},
 	{
 		"folke/persistence.nvim",
-		event = "BufReadPre",
+		event = "VeryLazy",
 		dependencies = {
 			"nvim-telescope/telescope.nvim",
 		},

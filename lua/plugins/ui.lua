@@ -159,9 +159,20 @@ return {
         end
         return ""
       end
+      local function lualine_theme()
+        if vim.g.colors_name ~= "wildcharm" then
+          return "auto"
+        end
+        local st = { fg = "#000000", bg = "#ADADAD" }
+        local theme = {}
+        for _, mode in ipairs({ "normal", "insert", "visual", "replace", "command", "terminal", "select", "inactive" }) do
+          theme[mode] = { a = st, b = st, c = st, x = st, y = st, z = st }
+        end
+        return theme
+      end
       require("lualine").setup({
         options = {
-          theme = "auto",
+          theme = lualine_theme,
           globalstatus = true,
           section_separators = { left = "", right = "" },
           component_separators = { left = "", right = "" },
@@ -199,20 +210,6 @@ return {
           lualine_z = {},
         },
       })
-      local function wildcharm_panel()
-        if vim.g.colors_name ~= "wildcharm" then
-          return
-        end
-        for _, sec in ipairs({ "a", "b", "c", "x", "y", "z" }) do
-          for _, mode in ipairs({ "normal", "insert", "visual", "replace", "command", "terminal", "select" }) do
-            local name = "lualine_" .. sec .. "_" .. mode
-            local hl = vim.api.nvim_get_hl(0, { name = name })
-            vim.api.nvim_set_hl(0, name, { fg = "#000000", bg = hl.bg, bold = hl.bold, italic = hl.italic })
-          end
-        end
-      end
-      vim.api.nvim_create_autocmd("ColorScheme", { callback = wildcharm_panel })
-      wildcharm_panel()
     end,
   },
   {

@@ -1,7 +1,7 @@
 local M = {}
 
 function M.pick()
-  local session_dir = vim.fn.expand(require("persistence").config.options.dir)
+  local session_dir = vim.fn.expand(require("persistence.config").options.dir)
   if vim.fn.isdirectory(session_dir) == 0 then
     vim.notify("No sessions yet", vim.log.levels.INFO)
     return
