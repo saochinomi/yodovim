@@ -113,12 +113,18 @@ return {
           return string.format("%2d%%%%", math.floor(cur / total * 100))
         end
       end
-local function theme_color(hl)
+      local function theme_color(hl)
         local c = vim.api.nvim_get_hl(0, { name = hl }).fg
         if type(c) == "number" then
           return string.format("#%06x", c)
         end
         return c or "#ffffff"
+      end
+      local function panel_fg(hl)
+        if vim.g.colors_name == "wildcharm" then
+          return "#000000"
+        end
+        return theme_color(hl)
       end
       local mode_colors = {
         n = "DiagnosticError",
@@ -135,7 +141,7 @@ local function theme_color(hl)
         ["!"] = "DiagnosticError",
       }
       local function mode_color()
-        return { fg = theme_color(mode_colors[vim.fn.mode()] or "DiagnosticInfo") }
+        return { fg = panel_fg(mode_colors[vim.fn.mode()] or "DiagnosticInfo") }
       end
       local function bar()
         return "▊"
@@ -165,7 +171,7 @@ local function theme_color(hl)
           lualine_a = {},
           lualine_b = {},
           lualine_c = {
-            { bar, color = function() return { fg = theme_color("Title") } end },
+            { bar, color = function() return { fg = panel_fg("Title") } end },
             { mode, color = mode_color },
             filetype_with_icon,
             { "filename", path = 1 },
@@ -176,19 +182,37 @@ local function theme_color(hl)
               symbols = { error = "  ", warn = "  ", info = "  ", hint = "  " },
             },
             { function() return "%=" end },
-            { lsp_name, color = { gui = "bold" } },
+            { lsp_name, color = function()
+              if vim.g.colors_name == "wildcharm" then
+                return { fg = "#000000", gui = "bold" }
+              end
+              return { gui = "bold" }
+            end },
           },
           lualine_x = {
             "branch",
             "diff",
-            { clock, color = function() return { fg = theme_color("Comment") } end },
-            { bar, color = function() return { fg = theme_color("Title") } end },
+            { clock, color = function() return { fg = panel_fg("Comment") } end },
+            { bar, color = function() return { fg = panel_fg("Title") } end },
           },
           lualine_y = {},
           lualine_z = {},
         },
       })
-
+      local function wildcharm_panel()
+        if vim.g.colors_name ~= "wildcharm" then
+          return
+        end
+        for _, sec in ipairs({ "a", "b", "c", "x", "y", "z" }) do
+          for _, mode in ipairs({ "normal", "insert", "visual", "replace", "command", "terminal", "select" }) do
+            local name = "lualine_" .. sec .. "_" .. mode
+            local hl = vim.api.nvim_get_hl(0, { name = name })
+            vim.api.nvim_set_hl(0, name, { fg = "#000000", bg = hl.bg, bold = hl.bold, italic = hl.italic })
+          end
+        end
+      end
+      vim.api.nvim_create_autocmd("ColorScheme", { callback = wildcharm_panel })
+      wildcharm_panel()
     end,
   },
   {
